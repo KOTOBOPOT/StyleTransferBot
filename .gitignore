@@ -1,0 +1,7 @@
+/.idea/
+/example_images
+/tests
+config.ini
+example.ini
+internal_config.ini
+token.ini
