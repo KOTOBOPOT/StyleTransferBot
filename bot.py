@@ -4,9 +4,7 @@ import configparser
 from telebot import types
 
 
-# TODO: Написать метод 'RESET', который будет вызываться из меню /set_up . RESET устанавливает пользователю настройки по умолчанию
-
-class NNBOT:
+class DialogBot:
     def __init__(self, is_logging=True):
         self.INTERNAL_CONFIG_PATH = "internal_config.ini"
         self.CONFIG_PATH = 'config.ini'
@@ -86,7 +84,7 @@ class NNBOT:
         if not self.check_user_in_configs(user_id, is_internal_config=is_internal_config): user_id = "DEFAULT"
         return self.get_settings(user_id, is_internal_config=is_internal_config)[parameter_name]
 
-    def __update_parameter(self, parameter, new_value, user_id='DEFAULT', is_internal_config=False):
+    def update_parameter(self, parameter, new_value, user_id='DEFAULT', is_internal_config=False):
         settings = self.get_settings(user_id, is_internal_config)
         settings[parameter] = new_value
         self.__save_settings(settings, user_id, is_internal_config)
@@ -101,7 +99,8 @@ class NNBOT:
         timeout: целое число (по умолчанию 20) - Тайм-аут в секундах для длительного опроса
         '''
         self.bot.polling(non_stop=non_stop, interval=interval, timeout=timeout)
-
+    def get_bot(self):
+        return self.bot
     def set_to_default_config(self):
         config = configparser.ConfigParser()
         config['DEFAULT'] = {
@@ -149,10 +148,10 @@ class NNBOT:
         @bot.message_handler(commands=['start', 'help'])
         def send_usual_commands(message):
             if message.text == '/start':
-                bot.reply_to(message, "Ok, lets start. To proccess photo enter: /pr. For extra info see /help")
+                bot.reply_to(message, "Ok, lets start. To proccess photo enter: /draw. For extra info see /help")
             else:
                 bot.reply_to(message,
-                             "This bot process images. To proccess photo enter: /pr. To change colors, return parameters etc. run /set_up")
+                             "This bot transfer style image to content image. To set up content image run /set_content , for style image /set_style. To make tranfer run /draw")
 
         @bot.message_handler(commands=['set_up'])
         def send_settings(message):
@@ -183,23 +182,20 @@ class NNBOT:
                 username = call.message.from_user.username
                 # print(call.data, list(self.settings.values()))
                 if call.data in list(self.settings.keys()):
-                    self.__update_parameter("waiting_parameter", call.data, is_internal_config=True, user_id=user_id)
+                    self.update_parameter("waiting_parameter", call.data, is_internal_config=True, user_id=user_id)
                     bot.send_message(call.message.chat.id, f"Changing {call.data}. Enter new value:")
                     bot.register_next_step_handler(call.message, update_settings_parameter);
 
                 if call.data == "CANCEL":
-                    self.__update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
+                    self.update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
                     bot.send_message(call.message.chat.id, f"Action cancelled")
 
         # bot.register_next_step_handler(message, update_settings);
-        @bot.message_handler(commands=['pr'])
-        def send_processing(message):
-            bot.reply_to(message, "Send image to process..")
-            bot.register_next_step_handler(message, get_image);
 
-        @bot.message_handler(content_types=['text'])
-        def get_unknown_message(message):
-            bot.reply_to(message, "Unknown message. See /help command")
+
+        # @bot.message_handler(content_types=['text'])
+        # def get_unknown_message(message):
+        #     bot.reply_to(message, "Unknown message. See /help command")
             # bot.reply_to(message, message.from_user.id)
 
         # def update_settings(message):
@@ -209,7 +205,7 @@ class NNBOT:
             username = message.from_user.username
             if message.content_type == 'text':
                 if message.text == '/cancel':
-                    self.__update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
+                    self.update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
                     bot.send_message(message.from_user.id, f"Command cancelled.")
                 else:
                     waiting_parameter = self.get_parameter("waiting_parameter", is_internal_config=True,
@@ -228,11 +224,11 @@ class NNBOT:
                         # message.from.id#message.from.username
                         if not self.check_user_in_configs(user_id, is_internal_config=True):
                             self.add_user_to_configs(user_id, username)
-                            self.__update_parameter("username", message.from_user.username, is_internal_config=True,
+                            self.update_parameter("username", message.from_user.username, is_internal_config=True,
                                                     user_id=user_id)
 
-                        self.__update_parameter(waiting_parameter, new_value, user_id=user_id)  # Changing user params
-                        self.__update_parameter("waiting_parameter", "None", is_internal_config=True,
+                        self.update_parameter(waiting_parameter, new_value, user_id=user_id)  # Changing user params
+                        self.update_parameter("waiting_parameter", "None", is_internal_config=True,
                                                 user_id=user_id)  # Set waiting flag to none
                         bot.send_message(message.from_user.id, f"Got it. Parameter is changed")
             else:
@@ -241,26 +237,26 @@ class NNBOT:
                 bot.register_next_step_handler(message, update_settings_parameter);
 
         # @bot.message_handler(content_types=['photo'])
-        def get_image(message):
-
-            user_id = self.get_user_id(message)  # message.from_user.id
-            if message.content_type == 'photo':
-                raw = message.photo[-1].file_id  # max image size id
-                path = raw + ".jpg"
-                file_info = bot.get_file(raw)
-                downloaded_file = bot.download_file(file_info.file_path)
-                with open(path, 'wb') as new_file:
-                    new_file.write(downloaded_file)
-
-                bot.send_message(message.from_user.id, f"Got image. Please wait..")  # message.photo)
-                # HERE IS PIC PROCCESSING
-            elif message.text == '/cancel':
-                bot.send_message(message.from_user.id, f"Canceling comand.")
-                self.__update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
-            else:
-                bot.send_message(message.from_user.id,
-                                 f"I cant read this Image or it's not image. Please send image(to cancel send /cancel )")
-                bot.register_next_step_handler(message, get_image);
+        # def get_image(message):
+        #
+        #     user_id = self.get_user_id(message)  # message.from_user.id
+        #     if message.content_type == 'photo':
+        #         raw = message.photo[-1].file_id  # max image size id
+        #         path = raw + ".jpg"
+        #         file_info = bot.get_file(raw)
+        #         downloaded_file = bot.download_file(file_info.file_path)
+        #         with open(path, 'wb') as new_file:
+        #             new_file.write(downloaded_file)
+        #
+        #         bot.send_message(message.from_user.id, f"Got image. Please wait..")  # message.photo)
+        #         # HERE IS PIC PROCCESSING
+        #     elif message.text == '/cancel':
+        #         bot.send_message(message.from_user.id, f"Canceling comand.")
+        #         self.update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
+        #     else:
+        #         bot.send_message(message.from_user.id,
+        #                          f"I cant read this Image or it's not image. Please send image(to cancel send /cancel )")
+        #         bot.register_next_step_handler(message, get_image);
 
     def check_user_in_configs(self, user_id, is_internal_config=True):
         fileway = self.INTERNAL_CONFIG_PATH
@@ -292,6 +288,6 @@ class NNBOT:
 
         # message.from.username
 
-
-nnbot = NNBOT()
-nnbot.start()
+if __name__ == '__main__':
+    nnbot = DialogBot()
+    nnbot.start()

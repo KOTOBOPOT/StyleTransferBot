@@ -1,7 +1,13 @@
+/.ipynb_checkpoints/
+/__pycache__
 /.idea/
 /example_images
 /tests
+/users
+/results
+test.ipynb
 config.ini
 example.ini
 internal_config.ini
 token.ini
+test.py
