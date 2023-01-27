@@ -47,7 +47,23 @@ class DialogBot:
     #    self.settings = settings
     #    self.__update_params(settings)
         self.__set_up_bot()
-'''
+    def start(self, non_stop=True, interval=0, timeout=20):
+        ''' После вызова этой функции TeleBot начинает опрашивать серверы Telegram на предмет новых сообщений.
+        none_stop: True / False (по умолчанию False) - не прекращать опрос при получении ошибки от серверов Telegram
+
+        interval: True / False (по умолчанию False) - интервал между запросами на опрос.
+        изменение этого параметра снижает время отклика бота.
+
+        timeout: целое число (по умолчанию 20) - Тайм-аут в секундах для длительного опроса
+        '''
+        self.bot.polling(non_stop=non_stop, interval=interval, timeout=timeout)
+    def get_bot(self):
+        return self.bot
+    
+    '''
+
+It's not released settings part due to unnecessary of it
+
     def update_settings(self, config_name):
         settings = self.get_settings(configs)
         self.__update_params(settings)
@@ -80,21 +96,6 @@ class DialogBot:
         settings = self.get_settings(user_id, is_internal_config)
         settings[parameter] = new_value
         self.__save_settings(settings, user_id, is_internal_config)
-'''
-    def start(self, non_stop=True, interval=0, timeout=20):
-        ''' После вызова этой функции TeleBot начинает опрашивать серверы Telegram на предмет новых сообщений.
-        none_stop: True / False (по умолчанию False) - не прекращать опрос при получении ошибки от серверов Telegram
-
-        interval: True / False (по умолчанию False) - интервал между запросами на опрос.
-        изменение этого параметра снижает время отклика бота.
-
-        timeout: целое число (по умолчанию 20) - Тайм-аут в секундах для длительного опроса
-        '''
-        self.bot.polling(non_stop=non_stop, interval=interval, timeout=timeout)
-    def get_bot(self):
-        return self.bot
-'''
-It's not released settings part due to unnecessary of it
  
     def set_to_default_config(self):
         config = configparser.ConfigParser()
@@ -133,10 +134,10 @@ It's not released settings part due to unnecessary of it
                 return False
             else:
                 return str(var)
-
+    '''
     def get_user_id(self, message):
         return message.chat.id
-'''
+    
     def __set_up_bot(self):
         bot = self.bot
 

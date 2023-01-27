@@ -9,13 +9,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision.utils import save_image
 from PIL import Image
-import matplotlib.pyplot as plt
+
 
 import torchvision.transforms as transforms
 import torchvision.models as models
-
-import copy
-import os
 
 def gram_matrix(input):
     a, b, c, d = input.size()  # a=batch size(=1)
@@ -221,8 +218,8 @@ class StyleNet:
         output = transforms.Resize((height, width)).forward(output)
         save_image(output, way_to_save + '/res.jpg')
 if __name__ == '__main__':
-    content_fileway = "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/example_images/2.jpg"
-    style_fileway = "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/example_images/picasso.jpg"
+    content_fileway = "<fileway to .jpg image>"
+    style_fileway = "<fileway to .jpg image>"
 
     print('Starting calcs')
     stnt = StyleNet()

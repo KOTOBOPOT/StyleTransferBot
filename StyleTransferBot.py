@@ -10,8 +10,8 @@ from PIL import Image
 import os
 
 class StyleTransferBot(DialogBot):
-    USERS_WAY = "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/users/"
-    RES_WAY= "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/results/"
+    USERS_WAY = files_proccessing.USERS_WAY# "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/users/"
+    RES_WAY= files_proccessing.RES_WAY#"C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/results/"
 
     def __init__(self, save_images = False):
         super().__init__(is_logging= True)
