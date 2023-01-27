@@ -10,8 +10,8 @@ from PIL import Image
 import os
 
 class StyleTransferBot(DialogBot):
-    USERS_WAY = files_proccessing.USERS_WAY# "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/users/"
-    RES_WAY= files_proccessing.RES_WAY#"C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/results/"
+    USERS_WAY = files_proccessing.USERS_WAY
+    RES_WAY= files_proccessing.RES_WAY
 
     def __init__(self, save_images = False):
         super().__init__(is_logging= True)
@@ -50,9 +50,9 @@ class StyleTransferBot(DialogBot):
             bot.register_next_step_handler(message, get_content_image);
             bot.reply_to(message, "Send content image: ")
         def get_content_image(message):
-            user_id = self.get_user_id(message)  # message.from_user.id
+            user_id = self.get_user_id(message)  
             if message.content_type == 'photo':
-                raw = message.photo[-1].file_id  # max image size id
+                raw = message.photo[-1].file_id  
                 path = files_proccessing.create_user_folder(user_id) + "/" + 'content' + ".jpg"
                 file_info = bot.get_file(raw)
                 downloaded_file = bot.download_file(file_info.file_path)
