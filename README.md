@@ -8,11 +8,13 @@ StyleNet is got from official Pytorch site pytorch.org
 Bot released by python module telebot
 
 ## Telegram Commands:
-/set_content - Get content image
-/set_style - Get style image
-/draw - Make result image
-/cancel - Cancel current command
-/help - Get info about bot
+/set_content - Get content image <br />
+/set_style - Get style image<br />
+/draw - Make result image<br />
+/cancel - Cancel current command<br />
+/help - Get info about bot<br />
+
+## Using Example
 
 ## Install
 To run this bot on your own you need:
