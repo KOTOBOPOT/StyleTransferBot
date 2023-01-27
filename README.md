@@ -15,6 +15,8 @@ Bot released by python module telebot
 /help - Get info about bot<br />
 
 ## Using Example
+![alt tag](https://github.com/KOTOBOPOT/StyleTransferBot/blob/main/screenshot2.jpg)
+![alt tag](https://github.com/KOTOBOPOT/StyleTransferBot/blob/main/screenshot1.jpg)
 
 ## Install
 To run this bot on your own you need:
