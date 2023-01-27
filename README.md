@@ -1,5 +1,5 @@
 # StyleTransferBot
-This repository contains Telegram Bot which transfer  input style image to input image 
+This repository contains Telegram Bot which transfer  input style image into input content image 
 
 ## Neural Network
 StyleNet is got from official Pytorch site pytorch.org
