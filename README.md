@@ -6,3 +6,9 @@ StyleNet is got from official Pytorch site pytorch.org
 
 ## Bot
 Bot released by python module telebot
+
+## Install
+To run this bot on your own you need:
+1. Copy this repository where you want to run bot
+2. Create file 'token.ini' contained bot token
+3. Run 'StyleTransfer.py'
