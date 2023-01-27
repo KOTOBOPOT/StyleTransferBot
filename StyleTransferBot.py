@@ -4,7 +4,7 @@ StyleTransferBot combines Telegram bot and Neural Network
 from bot import DialogBot
 import photo_processing.files_proccessing as files_proccessing
 import photo_processing.ImagesProcessing as ImagesProcessing
-
+import torch
 from PIL import Image
 
 import os
@@ -36,7 +36,7 @@ class StyleTransferBot(DialogBot):
                 user_fileway = files_proccessing.get_user_fileway(user_id)
                 self.Network.run(f'{user_fileway}/content.jpg',f'{user_fileway}/style.jpg', user_fileway,2)
                 bot.send_photo(user_id, photo=open(files_proccessing.get_user_fileway(user_id)+ '/res.jpg', 'rb'))
-
+                torch.cuda.empty_cache()
                 style_image = Image.open(files_proccessing.USERS_WAY + f'{user_id}/style.jpg')
                 content_image = Image.open(files_proccessing.USERS_WAY + f'{user_id}/content.jpg')
                 res_image = Image.open(files_proccessing.USERS_WAY + f'{user_id}/res.jpg')
