@@ -1,3 +1,6 @@
+'''
+ImagesProcessing - provides neural network thats combine style and content image. Neural network is got from pytorch.org
+'''
 from __future__ import print_function
 
 import torch
@@ -214,7 +217,7 @@ class StyleNet:
         input_img = content_img.clone()
         output = self.run_style_transfer(self.cnn, self.cnn_normalization_mean, self.cnn_normalization_std,
                                     content_img, style_img, input_img)
-        #print(type(output))
+
         output = transforms.Resize((height, width)).forward(output)
         save_image(output, way_to_save + '/res.jpg')
 if __name__ == '__main__':

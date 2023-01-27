@@ -1,6 +1,10 @@
+''' 
+StyleTransferBot combines Telegram bot and Neural Network
+'''
 from bot import DialogBot
-import files_proccessing
-import ImagesProcessing
+import photo_processing.files_proccessing as files_proccessing
+import photo_processing.ImagesProcessing as ImagesProcessing
+
 from PIL import Image
 
 import os
@@ -14,15 +18,11 @@ class StyleTransferBot(DialogBot):
         self.__set_up_image_bot()
         self.SAVE_IMAGES = save_images
         self.Network = ImagesProcessing.StyleNet()
+        
 
     def __set_up_image_bot(self):
         bot = self.bot
 
-        #@bot.message_handler(content_types=('photo'))
-        #def photo_pr(message):
-        #    bot.reply_to(message, "Got  images to process..")
-        #            
-#        #            bot.register_next_step_handler(message, get_content_image);
 
         @bot.message_handler(commands=['draw'])
         def send_processing(message):
@@ -34,7 +34,7 @@ class StyleTransferBot(DialogBot):
             else:      
                 bot.reply_to(message, "Please wait....")
                 user_fileway = files_proccessing.get_user_fileway(user_id)
-                self.Network.run(f'{user_fileway}/content.jpg',f'{user_fileway}/style.jpg', user_fileway,3)
+                self.Network.run(f'{user_fileway}/content.jpg',f'{user_fileway}/style.jpg', user_fileway,2)
                 bot.send_photo(user_id, photo=open(files_proccessing.get_user_fileway(user_id)+ '/res.jpg', 'rb'))
 
                 style_image = Image.open(files_proccessing.USERS_WAY + f'{user_id}/style.jpg')
@@ -60,7 +60,6 @@ class StyleTransferBot(DialogBot):
                     new_file.write(downloaded_file)
 
                 bot.send_message(message.from_user.id, f"Got content image")  # message.photo)
-               # bot.register_next_step_handler(message, get_style_image);# HERE IS PIC PROCCESSING
             elif message.text == '/cancel':
                 bot.send_message(message.from_user.id, f"Canceling comand.")
                 self.update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
@@ -99,4 +98,3 @@ class StyleTransferBot(DialogBot):
 if __name__ == '__main__':
     bot = StyleTransferBot()
     bot.start()
-    #print(2)

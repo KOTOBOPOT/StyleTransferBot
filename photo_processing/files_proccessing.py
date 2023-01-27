@@ -1,3 +1,7 @@
+''' 
+files_proccessing is class for creating folders needed for saving results of neural network.
+'''
+
 import os
 
 USERS_WAY = "C:/Users/boris/OneDrive/Рабочий стол/1 учеба/ML/Deep Learning School 1-ый семестр/проект/StyleTransfer/users/"

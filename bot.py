@@ -1,3 +1,6 @@
+'''
+DialogBot sets up Telegram bot and performs common commands like /start, /help enc. #providing conversation between neural network and user. It gets style or content image and send  
+'''
 import telebot
 import logging
 import configparser
@@ -26,12 +29,7 @@ class DialogBot:
             self.logger = telebot.logger
             telebot.logger.setLevel(logging.DEBUG)  # Outputs debug messages to console.
 
-    def __update_params(self, settings):
-        pass
-
-    def __set_up_nn(self):
-        pass
-
+   
     def __get_settings(self, config_name, is_internal_config=False):
 
         settings_config = configparser.ConfigParser()
@@ -45,12 +43,11 @@ class DialogBot:
         return settings
 
     def __set_up(self):
-        settings = self.__get_settings("DEFAULT")
-        self.settings = settings
-        self.__update_params(settings)
-        self.__set_up_nn()
+    #    settings = self.__get_settings("DEFAULT")
+    #    self.settings = settings
+    #    self.__update_params(settings)
         self.__set_up_bot()
-
+'''
     def update_settings(self, config_name):
         settings = self.get_settings(configs)
         self.__update_params(settings)
@@ -61,19 +58,14 @@ class DialogBot:
         print(f'get_settings2 user_id: {user_id}')
         return self.__get_settings(user_id, is_internal_config=is_internal_config)
 
-    def __save_configs(self):
-        pass
-
+    
     def __save_settings(self, new_settings, user_id='DEFAULT', is_internal_config=False):  # for single config
         user_id = str(user_id)
-        #      settings_config = configparser.ConfigParser()
+
         if not is_internal_config:
             fileway = self.CONFIG_PATH
         else:
             fileway = self.INTERNAL_CONFIG_PATH
-        #        settings_config.read(fileway)
-        #       settings_config[user_id] = new_settings
-        # print(type(user_id),user_id,new_settings)
         settings_config = configparser.ConfigParser()
         settings_config.read(fileway)
         settings_config[user_id] = new_settings
@@ -88,7 +80,7 @@ class DialogBot:
         settings = self.get_settings(user_id, is_internal_config)
         settings[parameter] = new_value
         self.__save_settings(settings, user_id, is_internal_config)
-
+'''
     def start(self, non_stop=True, interval=0, timeout=20):
         ''' После вызова этой функции TeleBot начинает опрашивать серверы Telegram на предмет новых сообщений.
         none_stop: True / False (по умолчанию False) - не прекращать опрос при получении ошибки от серверов Telegram
@@ -101,6 +93,9 @@ class DialogBot:
         self.bot.polling(non_stop=non_stop, interval=interval, timeout=timeout)
     def get_bot(self):
         return self.bot
+'''
+It's not released settings part due to unnecessary of it
+ 
     def set_to_default_config(self):
         config = configparser.ConfigParser()
         config['DEFAULT'] = {
@@ -141,7 +136,7 @@ class DialogBot:
 
     def get_user_id(self, message):
         return message.chat.id
-
+'''
     def __set_up_bot(self):
         bot = self.bot
 
@@ -152,6 +147,9 @@ class DialogBot:
             else:
                 bot.reply_to(message,
                              "This bot transfer style image to content image. To set up content image run /set_content , for style image /set_style. To make tranfer run /draw")
+
+'''
+It's not released settings part due to unnecessary of it
 
         @bot.message_handler(commands=['set_up'])
         def send_settings(message):
@@ -177,10 +175,8 @@ class DialogBot:
         @bot.callback_query_handler(func=lambda call: True)
         def callback_inline(call):
             if call.message:
-                user_id = self.get_user_id(call.message)  # call.message.from_user.id
-                print(f'Recieve answer from user_id: {user_id}')
+                user_id = self.get_user_id(call.message)  
                 username = call.message.from_user.username
-                # print(call.data, list(self.settings.values()))
                 if call.data in list(self.settings.keys()):
                     self.update_parameter("waiting_parameter", call.data, is_internal_config=True, user_id=user_id)
                     bot.send_message(call.message.chat.id, f"Changing {call.data}. Enter new value:")
@@ -190,18 +186,10 @@ class DialogBot:
                     self.update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
                     bot.send_message(call.message.chat.id, f"Action cancelled")
 
-        # bot.register_next_step_handler(message, update_settings);
 
-
-        # @bot.message_handler(content_types=['text'])
-        # def get_unknown_message(message):
-        #     bot.reply_to(message, "Unknown message. See /help command")
-            # bot.reply_to(message, message.from_user.id)
-
-        # def update_settings(message):
 
         def update_settings_parameter(message):
-            user_id = self.get_user_id(message)  # message.from_user.id
+            user_id = self.get_user_id(message) 
             username = message.from_user.username
             if message.content_type == 'text':
                 if message.text == '/cancel':
@@ -210,7 +198,6 @@ class DialogBot:
                 else:
                     waiting_parameter = self.get_parameter("waiting_parameter", is_internal_config=True,
                                                            user_id=user_id)
-                    # print(waiting_parameter)
                     old_value = self.get_settings(user_id=user_id, is_internal_config=False)[waiting_parameter]
                     old_value_type = type(old_value)
                     new_value = self.get_var_value(message.text)
@@ -221,7 +208,7 @@ class DialogBot:
                                          f"Thats wrong type. Please send correct, see original type above(to cancel send /cancel )")
                         bot.register_next_step_handler(message, update_settings_parameter);
                     else:
-                        # message.from.id#message.from.username
+          
                         if not self.check_user_in_configs(user_id, is_internal_config=True):
                             self.add_user_to_configs(user_id, username)
                             self.update_parameter("username", message.from_user.username, is_internal_config=True,
@@ -236,27 +223,9 @@ class DialogBot:
                                  f"Thats not a text type. Please send text(to cancel send /cancel )")
                 bot.register_next_step_handler(message, update_settings_parameter);
 
-        # @bot.message_handler(content_types=['photo'])
-        # def get_image(message):
-        #
-        #     user_id = self.get_user_id(message)  # message.from_user.id
-        #     if message.content_type == 'photo':
-        #         raw = message.photo[-1].file_id  # max image size id
-        #         path = raw + ".jpg"
-        #         file_info = bot.get_file(raw)
-        #         downloaded_file = bot.download_file(file_info.file_path)
-        #         with open(path, 'wb') as new_file:
-        #             new_file.write(downloaded_file)
-        #
-        #         bot.send_message(message.from_user.id, f"Got image. Please wait..")  # message.photo)
-        #         # HERE IS PIC PROCCESSING
-        #     elif message.text == '/cancel':
-        #         bot.send_message(message.from_user.id, f"Canceling comand.")
-        #         self.update_parameter("waiting_parameter", "None", is_internal_config=True, user_id=user_id)
-        #     else:
-        #         bot.send_message(message.from_user.id,
-        #                          f"I cant read this Image or it's not image. Please send image(to cancel send /cancel )")
-        #         bot.register_next_step_handler(message, get_image);
+      
+
+    
 
     def check_user_in_configs(self, user_id, is_internal_config=True):
         fileway = self.INTERNAL_CONFIG_PATH
@@ -282,12 +251,7 @@ class DialogBot:
         settings_config[str(user_id)]['username'] = username
         with open(self.INTERNAL_CONFIG_PATH, 'w') as configfile:
             settings_config.write(configfile)
-
-        # pass#message.from_user.id#
-        # message.from.id
-
-        # message.from.username
-
+'''
 if __name__ == '__main__':
     nnbot = DialogBot()
     nnbot.start()
